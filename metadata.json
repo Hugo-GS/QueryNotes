@@ -1,0 +1,5 @@
+{
+  "name": "QueryBook",
+  "description": "A backend engineer's portfolio interface designed as a high-tech laboratory. It simulates complex API interactions, displaying metrics, headers, logs, and SQL traces to demonstrate backend architecture mastery.",
+  "requestFramePermissions": []
+}

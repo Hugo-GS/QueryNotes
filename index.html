@@ -1,0 +1,116 @@
+
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>QueryNote</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:ital,wght@0,300;0,400;0,500;0,700;1,300;1,400;1,500;1,700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu+Mono:ital,wght@0,400;0,700;1,400;1,700&display=swap" rel="stylesheet">
+    
+    <style>
+      /* Global Font Scaling */
+      html {
+        font-size: 18px;
+      }
+
+      /* Custom Scrollbar */
+      ::-webkit-scrollbar {
+        width: 8px;
+        height: 8px;
+      }
+      ::-webkit-scrollbar-track {
+        background: var(--color-lab-bg); 
+      }
+      ::-webkit-scrollbar-thumb {
+        background: var(--color-lab-border); 
+        border-radius: 4px;
+      }
+      ::-webkit-scrollbar-thumb:hover {
+        background: var(--color-lab-text-muted); 
+      }
+
+      /* Grid Background Pattern */
+      .lab-grid {
+        background-color: var(--color-lab-bg-dim); /* Slightly dimmer for the outside */
+        background-image: 
+          linear-gradient(var(--grid-line) 1px, transparent 1px),
+          linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+        background-size: 40px 40px;
+        transition: background-color 0.3s ease;
+      }
+      
+      .glass-panel {
+        background: var(--color-lab-panel);
+        border: 1px solid var(--color-lab-border);
+        box-shadow: none; 
+        transition: background-color 0.3s ease, border-color 0.3s ease;
+      }
+    </style>
+
+    <script>
+      tailwind.config = {
+        darkMode: 'class',
+        theme: {
+          extend: {
+            fontFamily: {
+              sans: ['Ubuntu', 'sans-serif'],
+              mono: ['Ubuntu Mono', 'monospace'],
+            },
+            colors: {
+              lab: {
+                bg: 'var(--color-lab-bg)',
+                bgDim: 'var(--color-lab-bg-dim)',
+                panel: 'var(--color-lab-panel)',
+                codeBg: 'var(--color-lab-code-bg)',
+                border: 'var(--color-lab-border)',
+                text: 'var(--color-lab-text)',
+                textMuted: 'var(--color-lab-text-muted)',
+                
+                red: 'var(--color-lab-red)',
+                green: 'var(--color-lab-green)',
+                greenLight: 'var(--color-lab-green-light)',
+                blue: 'var(--color-lab-blue)',
+                blueAqua: 'var(--color-lab-blue-aqua)',
+                yellow: 'var(--color-lab-yellow)',
+                orange: 'var(--color-lab-orange)',
+                purple: 'var(--color-lab-purple)',
+                selection: 'var(--color-lab-selection)',
+              }
+            },
+            animation: {
+              'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+              'scan': 'scan 2s linear infinite',
+            },
+            keyframes: {
+              scan: {
+                '0%': { transform: 'translateY(-100%)' },
+                '100%': { transform: 'translateY(100%)' },
+              }
+            }
+          }
+        }
+      }
+    </script>
+  <script type="importmap">
+{
+  "imports": {
+    "recharts": "https://aistudiocdn.com/recharts@^3.4.1",
+    "react/": "https://aistudiocdn.com/react@^19.2.0/",
+    "react": "https://aistudiocdn.com/react@^19.2.0",
+    "@google/genai": "https://aistudiocdn.com/@google/genai@^1.30.0",
+    "react-dom/": "https://aistudiocdn.com/react-dom@^19.2.0/",
+    "lucide-react": "https://aistudiocdn.com/lucide-react@^0.554.0",
+    "react-markdown": "https://esm.sh/react-markdown@9?bundle",
+    "remark-gfm": "https://esm.sh/remark-gfm@4?bundle"
+  }
+}
+</script>
+</head>
+  <body class="bg-lab-bgDim text-lab-text font-sans min-h-screen transition-colors duration-300">
+    <div id="root"></div>
+  </body>
+</html>
