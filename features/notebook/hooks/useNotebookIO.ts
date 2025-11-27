@@ -2,12 +2,19 @@
 import { useState, useRef, useCallback } from 'react';
 import { NotebookCell } from '../types';
 
+interface NotebookData {
+  cells: NotebookCell[];
+  environmentUrl?: string;
+}
+
 interface UseNotebookIOProps {
   setCells: (cells: NotebookCell[]) => void;
+  environmentUrl: string;
+  setEnvironmentUrl: (url: string) => void;
   forceCollapse: boolean;
 }
 
-export const useNotebookIO = ({ setCells, forceCollapse }: UseNotebookIOProps) => {
+export const useNotebookIO = ({ setCells, environmentUrl, setEnvironmentUrl, forceCollapse }: UseNotebookIOProps) => {
   const [isLoading, setIsLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
@@ -19,12 +26,23 @@ export const useNotebookIO = ({ setCells, forceCollapse }: UseNotebookIOProps) =
   }, [forceCollapse]);
 
   const validateNotebookData = useCallback((data: any): boolean => {
-    if (!Array.isArray(data)) return false;
-    return data.every(item => item.id && item.type && (item.content !== undefined || item.requestConfig !== undefined));
+    // Support both old format (array of cells) and new format (object with cells + environmentUrl)
+    if (Array.isArray(data)) {
+      // Old format: array of cells
+      return data.every(item => item.id && item.type && (item.content !== undefined || item.requestConfig !== undefined));
+    } else if (data && typeof data === 'object' && Array.isArray(data.cells)) {
+      // New format: object with cells array
+      return data.cells.every((item: any) => item.id && item.type && (item.content !== undefined || item.requestConfig !== undefined));
+    }
+    return false;
   }, []);
 
   const handleDownload = useCallback((cells: NotebookCell[]) => {
-    const data = JSON.stringify(cells, null, 2);
+    const notebookData: NotebookData = {
+      cells,
+      environmentUrl: environmentUrl || undefined
+    };
+    const data = JSON.stringify(notebookData, null, 2);
     const blob = new Blob([data], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
@@ -34,7 +52,7 @@ export const useNotebookIO = ({ setCells, forceCollapse }: UseNotebookIOProps) =
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-  }, []);
+  }, [environmentUrl]);
 
   const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -45,7 +63,16 @@ export const useNotebookIO = ({ setCells, forceCollapse }: UseNotebookIOProps) =
       try {
         const json = JSON.parse(event.target?.result as string);
         if (validateNotebookData(json)) {
-          setCells(processLoadedCells(json));
+          // Handle both old format (array) and new format (object with cells)
+          if (Array.isArray(json)) {
+            // Old format: just cells array
+            setCells(processLoadedCells(json));
+            setEnvironmentUrl('');
+          } else {
+            // New format: object with cells and environmentUrl
+            setCells(processLoadedCells(json.cells));
+            setEnvironmentUrl(json.environmentUrl || '');
+          }
         } else {
           alert("Invalid Notebook JSON format.");
         }
@@ -56,7 +83,7 @@ export const useNotebookIO = ({ setCells, forceCollapse }: UseNotebookIOProps) =
       }
     };
     reader.readAsText(file);
-  }, [validateNotebookData, setCells, processLoadedCells]);
+  }, [validateNotebookData, setCells, setEnvironmentUrl, processLoadedCells]);
 
   const loadFromUrl = useCallback(async (url: string) => {
     setIsLoading(true);
@@ -65,7 +92,16 @@ export const useNotebookIO = ({ setCells, forceCollapse }: UseNotebookIOProps) =
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       const json = await response.json();
       if (validateNotebookData(json)) {
-        setCells(processLoadedCells(json));
+        // Handle both old format (array) and new format (object with cells)
+        if (Array.isArray(json)) {
+          // Old format: just cells array
+          setCells(processLoadedCells(json));
+          setEnvironmentUrl('');
+        } else {
+          // New format: object with cells and environmentUrl
+          setCells(processLoadedCells(json.cells));
+          setEnvironmentUrl(json.environmentUrl || '');
+        }
       } else {
         alert("Invalid Notebook JSON format received from URL.");
       }
@@ -75,7 +111,7 @@ export const useNotebookIO = ({ setCells, forceCollapse }: UseNotebookIOProps) =
     } finally {
       setIsLoading(false);
     }
-  }, [validateNotebookData, setCells, processLoadedCells]);
+  }, [validateNotebookData, setCells, setEnvironmentUrl, processLoadedCells]);
 
   return {
     isLoading,
