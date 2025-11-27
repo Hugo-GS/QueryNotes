@@ -1,7 +1,7 @@
 
-import React, { useState, useEffect } from 'react';
-import { 
-  Play, Clock, Code, List, Trash2, ChevronDown, ChevronRight, X, Cpu, AlertCircle 
+import React, { useState, useEffect, useRef } from 'react';
+import {
+  Play, Clock, Code, List, Trash2, ChevronDown, ChevronRight, X, Cpu, AlertCircle
 } from 'lucide-react';
 import { RequestConfig } from './types';
 import { SimulatedResponse } from '../../shared/types';
@@ -22,22 +22,22 @@ interface RequestCellProps {
   layout?: 'SPLIT' | 'STACKED';
 }
 
-export const RequestCell: React.FC<RequestCellProps> = ({ 
-  id, 
-  initialConfig, 
+export const RequestCell: React.FC<RequestCellProps> = ({
+  id,
+  initialConfig,
   initialResponse,
-  onDelete, 
+  onDelete,
   onConfigChange,
   onResponseChange,
-  readOnly, 
-  layout = 'SPLIT' 
+  readOnly,
+  layout = 'SPLIT'
 }) => {
   // -- State --
   const [isExpanded, setIsExpanded] = useState(true);
   const [loading, setLoading] = useState(false);
   const [config, setConfig] = useState<RequestConfig>(initialConfig);
   const [response, setResponse] = useState<SimulatedResponse | null>(initialResponse || null);
-  
+
   // UI State
   const [leftTab, setLeftTab] = useState<'BODY' | 'HEADERS'>('BODY');
   const [rightTab, setRightTab] = useState<'BODY' | 'HEADERS' | 'LOGS' | 'TABLE'>('BODY');
@@ -47,19 +47,31 @@ export const RequestCell: React.FC<RequestCellProps> = ({
 
   const isStacked = layout === 'STACKED';
 
+  // Track previous config to detect changes
+  const prevConfigRef = useRef<string>(JSON.stringify(initialConfig));
+
   // -- State Synchronization --
   // Crucial: Update internal state if parent props change (e.g. loading from file)
   useEffect(() => {
     setResponse(initialResponse || null);
   }, [initialResponse]);
 
+  // Only update internal config if initialConfig actually changed (deep comparison)
   useEffect(() => {
-    setConfig(initialConfig);
+    const newConfigString = JSON.stringify(initialConfig);
+    if (newConfigString !== prevConfigRef.current) {
+      prevConfigRef.current = newConfigString;
+      setConfig(initialConfig);
+    }
   }, [initialConfig]);
 
-  // Notify parent of config changes
+  // Notify parent of config changes (with debounce to avoid rapid updates)
   useEffect(() => {
-    onConfigChange?.(config);
+    const currentConfigString = JSON.stringify(config);
+    if (currentConfigString !== prevConfigRef.current) {
+      prevConfigRef.current = currentConfigString;
+      onConfigChange?.(config);
+    }
   }, [config, onConfigChange]);
 
   // Auto-switch to TABLE tab when entering Stacked mode

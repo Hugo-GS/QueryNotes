@@ -1,5 +1,6 @@
 
-import React, { useState } from 'react';
+import * as React from 'react';
+import { useState } from 'react';
 import { Notebook } from './features/notebook/Notebook';
 import { useTheme } from './shared/hooks/useTheme';
 import { useAppQuery } from './shared/hooks/useAppQuery';
@@ -10,8 +11,8 @@ const App: React.FC = () => {
   const appConfig = useAppQuery();
 
   // 2. Initialize Global State
-  const { theme, toggleTheme } = useTheme(appConfig.initialTheme);
-  const [presentationMode, setPresentationMode] = useState(appConfig.isPresentationMode);
+  const { theme, toggleTheme } = useTheme(() => appConfig.initialTheme);
+  const [presentationMode, setPresentationMode] = useState(() => appConfig.isPresentationMode);
 
   return (
     <div className="lab-grid min-h-screen w-full flex flex-col relative">

@@ -1,5 +1,5 @@
 
-import { useState, useRef } from 'react';
+import { useState, useRef, useCallback } from 'react';
 import { NotebookCell } from '../types';
 
 interface UseNotebookIOProps {
@@ -11,19 +11,19 @@ export const useNotebookIO = ({ setCells, forceCollapse }: UseNotebookIOProps) =
   const [isLoading, setIsLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const processLoadedCells = (data: NotebookCell[]): NotebookCell[] => {
+  const processLoadedCells = useCallback((data: NotebookCell[]): NotebookCell[] => {
       if (forceCollapse) {
           return data.map(cell => ({ ...cell, isExpanded: false }));
       }
       return data;
-  };
+  }, [forceCollapse]);
 
-  const validateNotebookData = (data: any): boolean => {
+  const validateNotebookData = useCallback((data: any): boolean => {
     if (!Array.isArray(data)) return false;
     return data.every(item => item.id && item.type && (item.content !== undefined || item.requestConfig !== undefined));
-  };
+  }, []);
 
-  const handleDownload = (cells: NotebookCell[]) => {
+  const handleDownload = useCallback((cells: NotebookCell[]) => {
     const data = JSON.stringify(cells, null, 2);
     const blob = new Blob([data], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
@@ -34,9 +34,9 @@ export const useNotebookIO = ({ setCells, forceCollapse }: UseNotebookIOProps) =
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
-  };
+  }, []);
 
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileSelect = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -56,9 +56,9 @@ export const useNotebookIO = ({ setCells, forceCollapse }: UseNotebookIOProps) =
       }
     };
     reader.readAsText(file);
-  };
+  }, [validateNotebookData, setCells, processLoadedCells]);
 
-  const loadFromUrl = async (url: string) => {
+  const loadFromUrl = useCallback(async (url: string) => {
     setIsLoading(true);
     try {
       const response = await fetch(url);
@@ -75,7 +75,7 @@ export const useNotebookIO = ({ setCells, forceCollapse }: UseNotebookIOProps) =
     } finally {
       setIsLoading(false);
     }
-  };
+  }, [validateNotebookData, setCells, processLoadedCells]);
 
   return {
     isLoading,

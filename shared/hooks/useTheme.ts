@@ -1,8 +1,9 @@
 
+import * as React from 'react';
 import { useState, useLayoutEffect } from 'react';
 import { themes } from '../../themes';
 
-export const useTheme = (initialTheme: 'dark' | 'light' = 'dark') => {
+export const useTheme = (initialTheme: 'dark' | 'light' | (() => 'dark' | 'light') = 'dark') => {
   const [theme, setTheme] = useState<'dark' | 'light'>(initialTheme);
 
   useLayoutEffect(() => {
