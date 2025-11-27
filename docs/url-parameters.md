@@ -1,6 +1,6 @@
 # URL Query Parameters Documentation
 
-The **API CRUD y JWT Portfolio** supports extensive configuration via URL Query Parameters. This feature is designed for:
+**QueryBook** supports extensive configuration via URL Query Parameters. This feature is designed for:
 - Embedding the application in personal portfolios (Iframes).
 - Sharing specific notebook configurations with team members.
 - Creating "Headless" demos for presentations.
@@ -23,7 +23,7 @@ The **API CRUD y JWT Portfolio** supports extensive configuration via URL Query 
 Load a notebook from an external source (e.g., GitHub Gist, S3).
 
 ```
-https://your-app.com/?notebookUrl=https://example.com/my-api-flow.json
+https://your-app.com/?notebookUrl=https://example.com/my-notebook.json
 ```
 
 ### 2. Embedded Portfolio Mode (Read-Only)
@@ -53,7 +53,13 @@ https://your-app.com/?theme=light
 
 The logic for parsing these parameters is located in `shared/hooks/useAppQuery.ts`.
 
-- **Aliases**: 
+- **Aliases**:
   - `notebook` works exactly the same as `notebookUrl`.
   - `readOnly` and `hideEditButtons` trigger the exact same logic as `presentation=true`.
 - **Priority**: URL parameters override any local default settings but can be overridden by user interaction (e.g., the user can still toggle the theme manually if the Header is visible).
+
+---
+
+## Related Documentation
+
+- [Presentation Mode](./presentation-mode.md) - Detailed guide on using the headless/read-only view
