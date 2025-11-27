@@ -43,6 +43,7 @@ const INITIAL_CELLS: NotebookCell[] = [
 
 export const useNotebookState = () => {
   const [cells, setCells] = useState<NotebookCell[]>(INITIAL_CELLS);
+  const [environmentUrl, setEnvironmentUrl] = useState<string>('');
 
   const addRequestCell = useCallback(() => {
     const newCell: NotebookCell = {
@@ -109,6 +110,8 @@ export const useNotebookState = () => {
   return {
     cells,
     setCells,
+    environmentUrl,
+    setEnvironmentUrl,
     addRequestCell,
     addTextCell,
     addRowCell,

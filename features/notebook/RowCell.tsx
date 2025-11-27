@@ -16,6 +16,7 @@ interface RowCellProps {
   onDelete: () => void;
   readOnly?: boolean;
   layout?: 'SPLIT' | 'STACKED';
+  environmentUrl?: string;
 }
 
 export const RowCell: React.FC<RowCellProps> = ({
@@ -28,7 +29,8 @@ export const RowCell: React.FC<RowCellProps> = ({
   onResponseUpdate,
   onDelete,
   readOnly,
-  layout = 'SPLIT'
+  layout = 'SPLIT',
+  environmentUrl
 }) => {
   return (
     <div className="relative group/row animate-in fade-in slide-in-from-bottom-2">
@@ -48,7 +50,7 @@ export const RowCell: React.FC<RowCellProps> = ({
 
         {/* Request Column (Right) - Flex 1 on desktop */}
         <div className="w-full lg:flex-1 min-w-0">
-            <RequestCell 
+            <RequestCell
                 id={id}
                 initialConfig={requestConfig}
                 initialResponse={initialResponse}
@@ -56,7 +58,8 @@ export const RowCell: React.FC<RowCellProps> = ({
                 onConfigChange={onConfigUpdate}
                 onResponseChange={onResponseUpdate}
                 readOnly={readOnly}
-                layout={layout} 
+                layout={layout}
+                environmentUrl={environmentUrl}
             />
         </div>
       </div>

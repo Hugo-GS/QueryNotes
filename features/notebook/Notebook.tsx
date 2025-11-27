@@ -31,6 +31,7 @@ export const Notebook: React.FC<NotebookProps> = ({
   // 1. State Management
   const {
     cells, setCells,
+    environmentUrl, setEnvironmentUrl,
     addRequestCell, addTextCell, addRowCell,
     deleteCell, updateTextCell, updateRequestConfig,
     updateCellResponse, updateCellLayout
@@ -40,7 +41,7 @@ export const Notebook: React.FC<NotebookProps> = ({
   const {
     isLoading, fileInputRef,
     handleDownload, handleFileSelect, loadFromUrl
-  } = useNotebookIO({ setCells, forceCollapse });
+  } = useNotebookIO({ setCells, environmentUrl, setEnvironmentUrl, forceCollapse });
 
   const [loadUrlModalOpen, setLoadUrlModalOpen] = useState(false);
 
@@ -94,15 +95,34 @@ export const Notebook: React.FC<NotebookProps> = ({
         <div className="p-2 md:p-8 flex flex-col gap-8 pb-32">
             {/* Header Actions (HIDDEN IN PRESENTATION MODE) */}
             {!isPresentationMode && (
-                <div className="flex flex-col sm:flex-row justify-end border-b border-lab-border pb-4 mb-4 gap-3">
-                    {isLoading && (
-                    <div className="flex items-center gap-2 text-lab-textMuted mr-auto animate-pulse">
-                        <Loader2 className="w-4 h-4 animate-spin" />
-                        <span className="text-xs font-mono">LOADING NOTEBOOK...</span>
+                <div className="flex flex-col border-b border-lab-border pb-4 mb-4 gap-3">
+                    {/* Environment URL Input */}
+                    <div className="flex flex-col gap-2">
+                      <label className="text-xs font-mono font-bold text-lab-textMuted uppercase">
+                        Environment Base URL
+                      </label>
+                      <input
+                        type="text"
+                        value={environmentUrl}
+                        onChange={(e) => setEnvironmentUrl(e.target.value)}
+                        placeholder="https://api.example.com"
+                        className="w-full px-3 py-2 text-sm font-mono bg-lab-bgDim border border-lab-border rounded text-lab-text placeholder:text-lab-textMuted/50 focus:outline-none focus:border-lab-blueAqua transition-colors"
+                      />
+                      <p className="text-xs font-mono text-lab-textMuted/70">
+                        Optional base URL that will be automatically prefixed to all relative endpoints
+                      </p>
                     </div>
-                    )}
-                    
-                    <div className="flex items-center justify-end gap-3 flex-wrap">
+
+                    {/* Action Buttons */}
+                    <div className="flex flex-col sm:flex-row justify-end gap-3">
+                      {isLoading && (
+                      <div className="flex items-center gap-2 text-lab-textMuted mr-auto animate-pulse">
+                          <Loader2 className="w-4 h-4 animate-spin" />
+                          <span className="text-xs font-mono">LOADING NOTEBOOK...</span>
+                      </div>
+                      )}
+
+                      <div className="flex items-center justify-end gap-3 flex-wrap">
                       <button 
                           onClick={() => fileInputRef.current?.click()}
                           className="flex items-center gap-2 px-3 py-1.5 text-xs font-mono font-bold text-lab-textMuted hover:text-lab-blueAqua border border-transparent hover:border-lab-border rounded transition-colors"
@@ -121,14 +141,15 @@ export const Notebook: React.FC<NotebookProps> = ({
                           LOAD URL
                       </button>
 
-                      <button 
-                          onClick={() => handleDownload(cells)}
-                          className="flex items-center gap-2 px-3 py-1.5 text-xs font-mono font-bold text-lab-blueAqua bg-lab-blueAqua/10 border border-lab-blueAqua/30 rounded hover:bg-lab-blueAqua/20 transition-colors"
-                          title="Download Notebook JSON"
-                      >
-                          <Download className="w-3 h-3" />
-                          EXPORT NOTEBOOK
-                      </button>
+                        <button
+                            onClick={() => handleDownload(cells)}
+                            className="flex items-center gap-2 px-3 py-1.5 text-xs font-mono font-bold text-lab-blueAqua bg-lab-blueAqua/10 border border-lab-blueAqua/30 rounded hover:bg-lab-blueAqua/20 transition-colors"
+                            title="Download Notebook JSON"
+                        >
+                            <Download className="w-3 h-3" />
+                            EXPORT NOTEBOOK
+                        </button>
+                      </div>
                     </div>
                 </div>
             )}
@@ -148,7 +169,7 @@ export const Notebook: React.FC<NotebookProps> = ({
                     readOnly={isPresentationMode}
                     />
                 ) : cell.type === 'ROW' ? (
-                    <RowCell 
+                    <RowCell
                         id={cell.id}
                         textContent={cell.content || ''}
                         requestConfig={cell.requestConfig!}
@@ -159,9 +180,10 @@ export const Notebook: React.FC<NotebookProps> = ({
                         onDelete={() => deleteCell(cell.id)}
                         readOnly={isPresentationMode}
                         layout={cell.layout}
+                        environmentUrl={environmentUrl}
                     />
                 ) : (
-                    <RequestCell 
+                    <RequestCell
                     id={cell.id}
                     initialConfig={cell.requestConfig!}
                     initialResponse={cell.response}
@@ -170,6 +192,7 @@ export const Notebook: React.FC<NotebookProps> = ({
                     onResponseChange={(res) => updateCellResponse(cell.id, res)}
                     readOnly={isPresentationMode}
                     layout={cell.layout}
+                    environmentUrl={environmentUrl}
                     />
                 )}
             </div>
