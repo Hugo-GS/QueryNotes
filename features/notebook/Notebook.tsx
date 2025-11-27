@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Plus, LayoutTemplate, Trash2, Columns, Download, Upload, Globe, Loader2 } from 'lucide-react';
 
 // Components
@@ -22,24 +22,24 @@ interface NotebookProps {
   forceCollapse?: boolean;
 }
 
-export const Notebook: React.FC<NotebookProps> = ({ 
+export const Notebook: React.FC<NotebookProps> = ({
     isPresentationMode = false,
     initialUrl,
     initialWidth,
     forceCollapse = false
 }) => {
   // 1. State Management
-  const { 
-    cells, setCells, 
-    addRequestCell, addTextCell, addRowCell, 
-    deleteCell, updateTextCell, updateRequestConfig, 
-    updateCellResponse, updateCellLayout 
+  const {
+    cells, setCells,
+    addRequestCell, addTextCell, addRowCell,
+    deleteCell, updateTextCell, updateRequestConfig,
+    updateCellResponse, updateCellLayout
   } = useNotebookState();
 
   // 2. IO Logic
-  const { 
-    isLoading, fileInputRef, 
-    handleDownload, handleFileSelect, loadFromUrl 
+  const {
+    isLoading, fileInputRef,
+    handleDownload, handleFileSelect, loadFromUrl
   } = useNotebookIO({ setCells, forceCollapse });
 
   const [loadUrlModalOpen, setLoadUrlModalOpen] = useState(false);
@@ -49,11 +49,14 @@ export const Notebook: React.FC<NotebookProps> = ({
   const { contextMenu, handleContextMenu, closeContextMenu } = useCellContextMenu();
 
   // 4. Effects
+  const hasLoadedInitialUrl = useRef(false);
+
   useEffect(() => {
-    if (initialUrl) {
+    if (initialUrl && !hasLoadedInitialUrl.current) {
       loadFromUrl(initialUrl);
+      hasLoadedInitialUrl.current = true;
     }
-  }, [initialUrl]);
+  }, [initialUrl, loadFromUrl]);
 
   return (
     <div 

@@ -1,5 +1,5 @@
 
-import { useState } from 'react';
+import { useState, useCallback } from 'react';
 import { NotebookCell } from '../types';
 import { RequestConfig } from '../../request/types';
 import { SimulatedResponse } from '../../../shared/types';
@@ -44,7 +44,7 @@ const INITIAL_CELLS: NotebookCell[] = [
 export const useNotebookState = () => {
   const [cells, setCells] = useState<NotebookCell[]>(INITIAL_CELLS);
 
-  const addRequestCell = () => {
+  const addRequestCell = useCallback(() => {
     const newCell: NotebookCell = {
       id: `req-${Date.now()}`,
       type: 'REQUEST',
@@ -58,19 +58,19 @@ export const useNotebookState = () => {
         headers: '{\n  "Content-Type": "application/json"\n}'
       }
     };
-    setCells([...cells, newCell]);
-  };
+    setCells(prev => [...prev, newCell]);
+  }, []);
 
-  const addTextCell = () => {
+  const addTextCell = useCallback(() => {
     const newCell: NotebookCell = {
       id: `txt-${Date.now()}`,
       type: 'TEXT',
       content: 'Add your notes here...'
     };
-    setCells([...cells, newCell]);
-  };
+    setCells(prev => [...prev, newCell]);
+  }, []);
 
-  const addRowCell = () => {
+  const addRowCell = useCallback(() => {
     const newCell: NotebookCell = {
       id: `row-${Date.now()}`,
       type: 'ROW',
@@ -83,28 +83,28 @@ export const useNotebookState = () => {
         headers: '{\n  "Content-Type": "application/json"\n}'
       }
     };
-    setCells([...cells, newCell]);
-  };
+    setCells(prev => [...prev, newCell]);
+  }, []);
 
-  const deleteCell = (id: string) => {
-    setCells(cells.filter(c => c.id !== id));
-  };
+  const deleteCell = useCallback((id: string) => {
+    setCells(prev => prev.filter(c => c.id !== id));
+  }, []);
 
-  const updateTextCell = (id: string, content: string) => {
-    setCells(cells.map(c => c.id === id ? { ...c, content } : c));
-  };
+  const updateTextCell = useCallback((id: string, content: string) => {
+    setCells(prev => prev.map(c => c.id === id ? { ...c, content } : c));
+  }, []);
 
-  const updateRequestConfig = (id: string, config: RequestConfig) => {
-      setCells(cells.map(c => c.id === id ? { ...c, requestConfig: config } : c));
-  };
+  const updateRequestConfig = useCallback((id: string, config: RequestConfig) => {
+    setCells(prev => prev.map(c => c.id === id ? { ...c, requestConfig: config } : c));
+  }, []);
 
-  const updateCellResponse = (id: string, response: SimulatedResponse | null) => {
-    setCells(cells.map(c => c.id === id ? { ...c, response } : c));
-  };
+  const updateCellResponse = useCallback((id: string, response: SimulatedResponse | null) => {
+    setCells(prev => prev.map(c => c.id === id ? { ...c, response } : c));
+  }, []);
 
-  const updateCellLayout = (id: string, layout: 'SPLIT' | 'STACKED') => {
-    setCells(cells.map(c => c.id === id ? { ...c, layout } : c));
-  };
+  const updateCellLayout = useCallback((id: string, layout: 'SPLIT' | 'STACKED') => {
+    setCells(prev => prev.map(c => c.id === id ? { ...c, layout } : c));
+  }, []);
 
   return {
     cells,

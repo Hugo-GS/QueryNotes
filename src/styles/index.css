@@ -1,0 +1,36 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-lab-bg);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-lab-border);
+  border-radius: 4px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-lab-text-muted);
+}
+
+/* Grid Background Pattern */
+.lab-grid {
+  background-color: var(--color-lab-bg-dim);
+  background-image:
+    linear-gradient(var(--grid-line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--grid-line) 1px, transparent 1px);
+  background-size: 40px 40px;
+  transition: background-color 0.3s ease;
+}
+
+.glass-panel {
+  background: var(--color-lab-panel);
+  border: 1px solid var(--color-lab-border);
+  box-shadow: none;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
