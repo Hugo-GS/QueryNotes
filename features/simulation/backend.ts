@@ -6,22 +6,38 @@ export const simulateBackendRequest = async (
   method: string,
   endpoint: string,
   body: string,
-  headersStr: string = '{}'
+  headersStr: string = '{}',
+  environmentUrl?: string
 ): Promise<SimulatedResponse> => {
-  
+
   const start = performance.now();
   const logs: LogEntry[] = [];
-  
-  logs.push({ 
-    timestamp: new Date().toISOString(), 
-    level: 'INFO', 
-    message: `Initializing ${mode} request to ${endpoint}` 
+
+  // Apply environment URL prefix if endpoint is relative
+  let finalEndpoint = endpoint;
+  if (environmentUrl && !endpoint.startsWith('http://') && !endpoint.startsWith('https://')) {
+    // Remove trailing slash from environment URL if present
+    const baseUrl = environmentUrl.endsWith('/') ? environmentUrl.slice(0, -1) : environmentUrl;
+    // Ensure endpoint starts with /
+    const path = endpoint.startsWith('/') ? endpoint : `/${endpoint}`;
+    finalEndpoint = `${baseUrl}${path}`;
+    logs.push({
+      timestamp: new Date().toISOString(),
+      level: 'INFO',
+      message: `Applied environment URL: ${environmentUrl} → ${finalEndpoint}`
+    });
+  }
+
+  logs.push({
+    timestamp: new Date().toISOString(),
+    level: 'INFO',
+    message: `Initializing ${mode} request to ${finalEndpoint}`
   });
 
   try {
     // 1. Validate URL
-    if (!endpoint.startsWith('http')) {
-        throw new Error("URL must start with http:// or https://");
+    if (!finalEndpoint.startsWith('http')) {
+        throw new Error("URL must start with http:// or https://, or provide an Environment URL for relative paths");
     }
 
     // 2. Parse Headers
@@ -54,7 +70,7 @@ export const simulateBackendRequest = async (
     logs.push({ timestamp: new Date().toISOString(), level: 'INFO', message: `Sending ${method} request...` });
 
     // 4. Execute Request
-    const response = await fetch(endpoint, fetchOptions);
+    const response = await fetch(finalEndpoint, fetchOptions);
     
     // 5. Calculate Metrics
     const latency = Math.round(performance.now() - start);

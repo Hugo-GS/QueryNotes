@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect, useRef } from 'react';
 import {
-  Play, Clock, Code, List, Trash2, ChevronDown, ChevronRight, X, Cpu, AlertCircle
+  Play, Clock, Code, List, Trash2, ChevronDown, ChevronRight, X, Cpu, AlertCircle, Globe
 } from 'lucide-react';
 import { RequestConfig } from './types';
 import { SimulatedResponse } from '../../shared/types';
@@ -20,6 +20,7 @@ interface RequestCellProps {
   onResponseChange?: (response: SimulatedResponse | null) => void;
   readOnly?: boolean;
   layout?: 'SPLIT' | 'STACKED';
+  environmentUrl?: string;
 }
 
 export const RequestCell: React.FC<RequestCellProps> = ({
@@ -30,7 +31,8 @@ export const RequestCell: React.FC<RequestCellProps> = ({
   onConfigChange,
   onResponseChange,
   readOnly,
-  layout = 'SPLIT'
+  layout = 'SPLIT',
+  environmentUrl
 }) => {
   // -- State --
   const [isExpanded, setIsExpanded] = useState(true);
@@ -44,8 +46,19 @@ export const RequestCell: React.FC<RequestCellProps> = ({
   const [inputMode, setInputMode] = useState<'RAW' | 'FORM'>('RAW'); // For Body only
   const [formRows, setFormRows] = useState<{id: string, key: string, value: string}[]>([]);
   const [jsonError, setJsonError] = useState<string | null>(null);
+  const [showEnvTooltip, setShowEnvTooltip] = useState(false);
 
   const isStacked = layout === 'STACKED';
+
+  // Calculate full URL when environment URL is present
+  const getFullUrl = () => {
+    if (!environmentUrl || config.endpoint.startsWith('http://') || config.endpoint.startsWith('https://')) {
+      return config.endpoint;
+    }
+    const baseUrl = environmentUrl.endsWith('/') ? environmentUrl.slice(0, -1) : environmentUrl;
+    const path = config.endpoint.startsWith('/') ? config.endpoint : `/${config.endpoint}`;
+    return `${baseUrl}${path}`;
+  };
 
   // Track previous config to detect changes
   const prevConfigRef = useRef<string>(JSON.stringify(initialConfig));
@@ -178,17 +191,18 @@ export const RequestCell: React.FC<RequestCellProps> = ({
   const handleSend = async () => {
     setLoading(true);
     if (!isExpanded) setIsExpanded(true);
-    
+
     try {
-      // Pass headers to the backend function
+      // Pass headers and environment URL to the backend function
       const result = await simulateBackendRequest(
-          config.mode, 
-          config.method, 
-          config.endpoint, 
-          config.body, 
-          config.headers
+          config.mode,
+          config.method,
+          config.endpoint,
+          config.body,
+          config.headers,
+          environmentUrl
       );
-      
+
       setResponse(result);
       onResponseChange?.(result);
       
@@ -235,14 +249,37 @@ export const RequestCell: React.FC<RequestCellProps> = ({
               {['GET','POST','PUT','DELETE','PATCH'].map(m => <option key={m} value={m}>{m}</option>)}
             </select>
             
-            <input 
-                type="text" 
+            <input
+                type="text"
                 value={config.endpoint}
                 onChange={(e) => setConfig({...config, endpoint: e.target.value})}
                 className="flex-1 min-w-[150px] bg-lab-bg border border-lab-border text-lab-text font-mono text-sm py-1.5 px-3 rounded focus:outline-none focus:border-lab-blue placeholder-lab-textMuted/50"
             />
 
-            <button 
+            {/* Environment Indicator */}
+            {environmentUrl && !config.endpoint.startsWith('http://') && !config.endpoint.startsWith('https://') && (
+              <div className="relative">
+                <div
+                  className="flex items-center gap-1 px-2 py-1 bg-lab-purple/10 rounded text-lab-purple text-xs font-mono font-bold cursor-help"
+                  onMouseEnter={() => setShowEnvTooltip(true)}
+                  onMouseLeave={() => setShowEnvTooltip(false)}
+                >
+                  <Globe className="w-3 h-3" />
+                  ENV
+                </div>
+
+                {/* Tooltip */}
+                {showEnvTooltip && (
+                  <div className="absolute z-50 top-full mt-2 left-1/2 transform -translate-x-1/2 bg-lab-bgDim border border-lab-border rounded shadow-xl px-3 py-2 min-w-[200px] max-w-[400px] animate-in fade-in slide-in-from-top-1 duration-200">
+                    <div className="text-xs font-mono text-lab-textMuted mb-1">Full URL:</div>
+                    <div className="text-xs font-mono text-lab-blueAqua break-all">{getFullUrl()}</div>
+                    <div className="absolute -top-1 left-1/2 transform -translate-x-1/2 w-2 h-2 bg-lab-bgDim border-t border-l border-lab-border rotate-45"></div>
+                  </div>
+                )}
+              </div>
+            )}
+
+            <button
               onClick={handleSend}
               disabled={loading}
               className="w-full sm:w-auto flex items-center justify-center gap-2 bg-lab-selection text-lab-blueAqua hover:bg-lab-blue hover:text-lab-bgDim px-4 py-1.5 rounded font-mono text-xs font-bold transition-colors disabled:opacity-50 shadow-lg shadow-lab-selection/20"
