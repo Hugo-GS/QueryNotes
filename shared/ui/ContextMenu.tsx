@@ -24,13 +24,15 @@ export const ContextMenu: React.FC<ContextMenuProps> = ({ x, y, items, onClose }
         onClose();
       }
     };
-    // Prevent scrolling when menu is open
-    document.body.style.overflow = 'hidden';
+
+    const handleScroll = () => onClose();
+
     document.addEventListener('mousedown', handleClickOutside);
-    
+    window.addEventListener('scroll', handleScroll, true);
+
     return () => {
-        document.body.style.overflow = '';
         document.removeEventListener('mousedown', handleClickOutside);
+        window.removeEventListener('scroll', handleScroll, true);
     };
   }, [onClose]);
 
