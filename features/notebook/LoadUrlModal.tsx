@@ -27,7 +27,7 @@ export const LoadUrlModal: React.FC<LoadUrlModalProps> = ({ onLoad, onClose }) =
   };
 
   return (
-    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
+    <div className="fixed inset-0 z-[100] flex items-center justify-center bg-lab-bg/50 backdrop-blur-sm p-4 animate-in fade-in duration-200">
       <div className="w-full max-w-md bg-lab-panel border border-lab-border shadow-2xl rounded-lg overflow-hidden ring-1 ring-lab-border/50">
         
         <div className="flex items-center justify-between px-4 py-3 bg-lab-bgDim border-b border-lab-border">
@@ -74,7 +74,7 @@ export const LoadUrlModal: React.FC<LoadUrlModalProps> = ({ onLoad, onClose }) =
             </button>
             <button 
               type="submit"
-              className="flex items-center gap-2 px-4 py-2 text-xs font-mono font-bold bg-lab-blueAqua text-lab-bgDim hover:bg-lab-blue hover:text-white rounded transition-colors shadow-lg shadow-lab-blueAqua/20"
+              className="flex items-center gap-2 px-4 py-2 text-xs font-mono font-bold bg-lab-blueAqua text-lab-bgDim hover:bg-lab-blue hover:text-lab-panel rounded transition-colors shadow-lg shadow-lab-blueAqua/20"
             >
               <Check className="w-3 h-3" />
               LOAD NOTEBOOK

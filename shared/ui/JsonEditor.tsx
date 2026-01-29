@@ -42,7 +42,7 @@ export const JsonEditor: React.FC<JsonEditorProps> = ({
   };
 
   // Styles shared exactly between textarea and pre to ensure perfect alignment
-  const sharedStyles = "absolute inset-0 w-full h-full font-mono text-xs p-4 leading-relaxed whitespace-pre-wrap break-words border-none outline-none resize-none overflow-auto custom-scrollbar";
+  const sharedStyles = "absolute inset-0 w-full h-full font-mono text-sm p-4 leading-relaxed whitespace-pre-wrap break-words border-none outline-none resize-none overflow-auto custom-scrollbar";
 
   return (
     <div className={`relative w-full h-full bg-lab-codeBg ${className} ${hasError ? 'bg-lab-red/5 border border-lab-red/50' : ''}`}>

@@ -44,7 +44,7 @@ export const RequestToolbar: React.FC<RequestToolbarProps> = ({
           value={config.method}
           onChange={(e) => onConfigChange({ ...config, method: e.target.value as any })}
           disabled={config.mode === 'GRAPHQL' || config.mode === 'SOAP'}
-          className={`flex-shrink-0 bg-lab-bg border border-lab-border text-lab-blueAqua font-mono text-xs font-bold py-1.5 px-2 rounded focus:outline-none focus:border-lab-blue ${
+          className={`flex-shrink-0 bg-lab-bg border border-lab-border text-lab-blueAqua font-mono text-sm font-bold py-1.5 px-2 rounded focus:outline-none focus:border-lab-blue ${
             config.mode === 'GRAPHQL' || config.mode === 'SOAP' ? 'opacity-50 cursor-not-allowed' : ''
           }`}
         >

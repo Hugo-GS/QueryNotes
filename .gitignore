@@ -24,6 +24,7 @@ dist-ssr
 
 # Netlify
 .netlify
+netlify
 
 # Local data/config
 metadata.json

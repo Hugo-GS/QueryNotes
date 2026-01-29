@@ -92,7 +92,7 @@ export const RequestComposer: React.FC<RequestComposerProps> = ({
           {readOnly ? (
             <div className="flex scale-90">
               <span
-                className={`px-2 py-1 text-[10px] font-bold rounded border border-lab-border ${
+                className={`px-2 py-1 text-xs font-bold rounded border border-lab-border ${
                   config.mode === 'REST'
                     ? 'text-lab-blue bg-lab-blue/10'
                     : config.mode === 'GRAPHQL'
@@ -107,7 +107,7 @@ export const RequestComposer: React.FC<RequestComposerProps> = ({
             <div className="flex scale-90 bg-lab-bg rounded border border-lab-border">
               <button
                 onClick={() => onModeSwitch('REST')}
-                className={`px-2 py-1 text-[10px] font-bold border-r border-lab-border transition-colors ${
+                className={`px-2 py-1 text-xs font-bold border-r border-lab-border transition-colors ${
                   config.mode === 'REST' ? 'text-lab-blue bg-lab-blue/10' : 'text-lab-textMuted'
                 }`}
               >
@@ -115,7 +115,7 @@ export const RequestComposer: React.FC<RequestComposerProps> = ({
               </button>
               <button
                 onClick={() => onModeSwitch('GRAPHQL')}
-                className={`px-2 py-1 text-[10px] font-bold border-r border-lab-border transition-colors ${
+                className={`px-2 py-1 text-xs font-bold border-r border-lab-border transition-colors ${
                   config.mode === 'GRAPHQL' ? 'text-lab-purple bg-lab-purple/10' : 'text-lab-textMuted'
                 }`}
               >
@@ -123,7 +123,7 @@ export const RequestComposer: React.FC<RequestComposerProps> = ({
               </button>
               <button
                 onClick={() => onModeSwitch('SOAP')}
-                className={`px-2 py-1 text-[10px] font-bold transition-colors ${
+                className={`px-2 py-1 text-xs font-bold transition-colors ${
                   config.mode === 'SOAP' ? 'text-lab-orange bg-lab-orange/10' : 'text-lab-textMuted'
                 }`}
               >
@@ -159,14 +159,14 @@ export const RequestComposer: React.FC<RequestComposerProps> = ({
               {formRows.map((row) => (
                 <div key={row.id} className="flex gap-2 items-center group">
                   <input
-                    className="flex-1 bg-lab-bg border border-lab-border focus:border-lab-blueAqua text-lab-blueAqua text-xs p-1.5 rounded font-mono outline-none transition-colors"
+                    className="flex-1 bg-lab-bg border border-lab-border focus:border-lab-blueAqua text-lab-blueAqua text-sm p-1.5 rounded font-mono outline-none transition-colors"
                     value={row.key}
                     onChange={(e) => onFormChange(row.id, 'key', e.target.value)}
                     placeholder="Key"
                   />
                   <span className="text-lab-textMuted">:</span>
                   <input
-                    className="flex-[2] bg-lab-bg border border-lab-border focus:border-lab-blueAqua text-lab-text text-xs p-1.5 rounded font-mono outline-none transition-colors"
+                    className="flex-[2] bg-lab-bg border border-lab-border focus:border-lab-blueAqua text-lab-text text-sm p-1.5 rounded font-mono outline-none transition-colors"
                     value={row.value}
                     onChange={(e) => onFormChange(row.id, 'value', e.target.value)}
                     placeholder="Value"
