@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Plus, LayoutTemplate, Trash2, Columns, Download, Upload, Globe, Loader2 } from 'lucide-react';
+import { Plus, LayoutTemplate, Trash2, Columns, Download, Upload, Globe, Loader2, ArrowUp, ArrowDown, FileText, Send } from 'lucide-react';
 
 // Components
 import { RequestCell } from '../request/RequestCell';
@@ -33,6 +33,7 @@ export const Notebook: React.FC<NotebookProps> = ({
     cells, setCells,
     environmentUrl, setEnvironmentUrl,
     addRequestCell, addTextCell, addRowCell,
+    insertCellAt, moveCell,
     deleteCell, updateTextCell, updateRequestConfig,
     updateCellResponse, updateCellLayout
   } = useNotebookState();
@@ -223,15 +224,44 @@ export const Notebook: React.FC<NotebookProps> = ({
             onClose={closeContextMenu}
             items={[
               {
-                label: 'View: Stacked (Table Focus)',
-                icon: <LayoutTemplate className="rotate-180" />,
-                onClick: () => contextMenu.cellId && updateCellLayout(contextMenu.cellId, 'STACKED')
+                label: 'Insert Above',
+                icon: <Plus />,
+                children: [
+                  { label: 'Text', icon: <FileText />, onClick: () => contextMenu.cellId && insertCellAt(contextMenu.cellId, 'TEXT', 'above') },
+                  { label: 'Request', icon: <Send />, onClick: () => contextMenu.cellId && insertCellAt(contextMenu.cellId, 'REQUEST', 'above') },
+                  { label: 'Split Row', icon: <Columns />, onClick: () => contextMenu.cellId && insertCellAt(contextMenu.cellId, 'ROW', 'above') },
+                ]
               },
               {
-                label: 'View: Split (Default)',
-                icon: <Columns />,
-                onClick: () => contextMenu.cellId && updateCellLayout(contextMenu.cellId, 'SPLIT')
+                label: 'Insert Below',
+                icon: <Plus />,
+                children: [
+                  { label: 'Text', icon: <FileText />, onClick: () => contextMenu.cellId && insertCellAt(contextMenu.cellId, 'TEXT', 'below') },
+                  { label: 'Request', icon: <Send />, onClick: () => contextMenu.cellId && insertCellAt(contextMenu.cellId, 'REQUEST', 'below') },
+                  { label: 'Split Row', icon: <Columns />, onClick: () => contextMenu.cellId && insertCellAt(contextMenu.cellId, 'ROW', 'below') },
+                ]
               },
+              { label: '', separator: true },
+              {
+                label: 'Move Up',
+                icon: <ArrowUp />,
+                onClick: () => contextMenu.cellId && moveCell(contextMenu.cellId, 'up')
+              },
+              {
+                label: 'Move Down',
+                icon: <ArrowDown />,
+                onClick: () => contextMenu.cellId && moveCell(contextMenu.cellId, 'down')
+              },
+              { label: '', separator: true },
+              {
+                label: 'View',
+                icon: <LayoutTemplate />,
+                children: [
+                  { label: 'Stacked (Table Focus)', icon: <LayoutTemplate className="rotate-180" />, onClick: () => contextMenu.cellId && updateCellLayout(contextMenu.cellId, 'STACKED') },
+                  { label: 'Split (Default)', icon: <Columns />, onClick: () => contextMenu.cellId && updateCellLayout(contextMenu.cellId, 'SPLIT') },
+                ]
+              },
+              { label: '', separator: true },
               {
                 label: 'Delete Cell',
                 icon: <Trash2 />,
