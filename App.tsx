@@ -28,7 +28,7 @@ const App: React.FC = () => {
       )}
 
       {/* --- Notebook Content --- */}
-      <main className={`flex-1 w-full relative z-10 ${presentationMode ? 'pt-4' : ''}`}>
+      <main className="flex-1 w-full relative z-10">
         <Notebook 
             isPresentationMode={presentationMode} 
             initialUrl={appConfig.notebookUrl}
