@@ -87,6 +87,58 @@ export const useNotebookState = () => {
     setCells(prev => [...prev, newCell]);
   }, []);
 
+  const insertCellAt = useCallback((cellId: string, type: 'TEXT' | 'REQUEST' | 'ROW', position: 'above' | 'below') => {
+    const newCell: NotebookCell = type === 'TEXT'
+      ? { id: `txt-${Date.now()}`, type: 'TEXT', content: 'Add your notes here...' }
+      : type === 'REQUEST'
+      ? {
+          id: `req-${Date.now()}`,
+          type: 'REQUEST',
+          isExpanded: true,
+          layout: 'SPLIT',
+          requestConfig: {
+            mode: 'REST',
+            method: 'GET',
+            endpoint: '/api/new-endpoint',
+            body: '{}',
+            headers: '{\n  "Content-Type": "application/json"\n}'
+          }
+        }
+      : {
+          id: `row-${Date.now()}`,
+          type: 'ROW',
+          content: '### Documentation\nExplain the request on the right...',
+          requestConfig: {
+            mode: 'REST',
+            method: 'GET',
+            endpoint: '/api/split-row-example',
+            body: '{}',
+            headers: '{\n  "Content-Type": "application/json"\n}'
+          }
+        };
+
+    setCells(prev => {
+      const index = prev.findIndex(c => c.id === cellId);
+      if (index === -1) return prev;
+      const insertIndex = position === 'above' ? index : index + 1;
+      return [...prev.slice(0, insertIndex), newCell, ...prev.slice(insertIndex)];
+    });
+  }, []);
+
+  const moveCell = useCallback((cellId: string, direction: 'up' | 'down') => {
+    setCells(prev => {
+      const index = prev.findIndex(c => c.id === cellId);
+      if (index === -1) return prev;
+      if (direction === 'up' && index === 0) return prev;
+      if (direction === 'down' && index === prev.length - 1) return prev;
+
+      const newCells = [...prev];
+      const swapIndex = direction === 'up' ? index - 1 : index + 1;
+      [newCells[index], newCells[swapIndex]] = [newCells[swapIndex], newCells[index]];
+      return newCells;
+    });
+  }, []);
+
   const deleteCell = useCallback((id: string) => {
     setCells(prev => prev.filter(c => c.id !== id));
   }, []);
@@ -115,6 +167,8 @@ export const useNotebookState = () => {
     addRequestCell,
     addTextCell,
     addRowCell,
+    insertCellAt,
+    moveCell,
     deleteCell,
     updateTextCell,
     updateRequestConfig,
